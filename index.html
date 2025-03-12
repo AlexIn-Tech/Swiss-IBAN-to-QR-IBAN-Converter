@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swiss QR-IBAN Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-lg">
+        <h1 class="text-2xl font-bold text-gray-800 text-center mb-4">Swiss QR-IBAN Converter</h1>
+
+        <!-- IBAN Input -->
+        <label class="block font-semibold text-gray-700">Standard IBAN:</label>
+        <input id="ibanInput" type="text" placeholder="CH21 8080 8001 2345 6789 0" 
+               class="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <p id="ibanError" class="text-red-500 text-sm mt-1 hidden">Invalid IBAN format.</p>
+
+        <!-- QR-IID Input -->
+        <label class="block font-semibold text-gray-700 mt-3">QR-IID (Bank Identifier 30000-31999):</label>
+        <input id="qrIidInput" type="number" placeholder="30808" min="30000" max="31999"
+               class="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <p id="qrIidError" class="text-red-500 text-sm mt-1 hidden">QR-IID must be between 30000 and 31999.</p>
+
+        <!-- Tutorial Button -->
+        <button onclick="toggleTutorial()" 
+                class="w-full bg-gray-500 text-white font-semibold py-2 mt-4 rounded-md hover:bg-gray-600 transition">
+            How to Find Your QR-IID?
+        </button>
+
+        <!-- Tutorial Section -->
+        <div id="tutorialSection" class="hidden mt-4 p-4 bg-gray-100 border border-gray-300 rounded-md">
+            <h2 class="font-semibold text-lg mb-2">How to Find Your QR-IID?</h2>
+            <ol class="list-decimal pl-5 text-gray-700 text-sm">
+                <li>Go to the <a href="https://www.six-group.com/en/products-services/banking-services/interbank-clearing/online-services/inquiry-iid.html" target="_blank" class="text-blue-600 underline">SIX Group IID Inquiry Page</a>.</li>
+                <li>Enter your bank name in the **Bank/Institution** field.</li>
+                <li>Click the **Search** button.</li>
+                <li>Look for a **QR-IID** in the results (values between **30000 - 31999**).</li>
+                <li>Copy the QR-IID and paste it into the input field above.</li>
+            </ol>
+        </div>
+
+        <!-- Convert Button -->
+        <button onclick="convertToQrIban()" 
+                class="w-full bg-blue-600 text-white font-semibold py-2 mt-4 rounded-md hover:bg-blue-700 transition">
+            Convert to QR-IBAN
+        </button>
+
+        <!-- Output Section -->
+        <div id="outputSection" class="hidden mt-4">
+            <label class="block font-semibold text-gray-700">Generated QR-IBAN:</label>
+            <div class="flex items-center">
+                <input id="qrIbanOutput" type="text" readonly 
+                       class="w-full px-3 py-2 border rounded-md bg-gray-200">
+                <button onclick="copyToClipboard()" 
+                        class="ml-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition">
+                    Copy
+                </button>
+            </div>
+        </div>
+        <!-- Footer -->
+        <footer class="mt-4 text-gray-600 text-sm text-center">
+            Created by <a href="https://alexin.tech/" class="text-blue-500 underline">AlexIn.Tech</a>
+        </footer>
+    </div>
+
+
+    <script>
+        function toggleTutorial() {
+            let tutorial = document.getElementById("tutorialSection");
+            tutorial.classList.toggle("hidden");
+        }
+
+        function convertToQrIban() {
+            let iban = document.getElementById("ibanInput").value.replace(/\s+/g, "").toUpperCase();
+            let qrIid = document.getElementById("qrIidInput").value.trim();
+            let ibanError = document.getElementById("ibanError");
+            let qrIidError = document.getElementById("qrIidError");
+            let outputSection = document.getElementById("outputSection");
+            let qrIbanOutput = document.getElementById("qrIbanOutput");
+
+            ibanError.classList.add("hidden");
+            qrIidError.classList.add("hidden");
+            outputSection.classList.add("hidden");
+
+            if (!/^CH\d{2}\d{5}\d{12}$/.test(iban)) {
+                ibanError.classList.remove("hidden");
+                return;
+            }
+
+            if (qrIid < 30000 || qrIid > 31999 || isNaN(qrIid)) {
+                qrIidError.classList.remove("hidden");
+                return;
+            }
+
+            let countryCode = "CH";
+            let newIban = countryCode + "00" + qrIid + iban.substring(9);
+            
+            let numericIban = newIban.substring(4) + "121700"; // CH = 1217, XX = 00 for now
+            let remainder = BigInt(numericIban) % 97n;
+            let checksum = String(98 - Number(remainder)).padStart(2, "0");
+
+            let qrIban = countryCode + checksum + newIban.substring(4);
+
+            qrIbanOutput.value = formatIban(qrIban);
+            outputSection.classList.remove("hidden");
+        }
+
+        function formatIban(iban) {
+            return iban.match(/.{1,4}/g).join(" ");
+        }
+
+        function copyToClipboard() {
+            let qrIbanOutput = document.getElementById("qrIbanOutput");
+            qrIbanOutput.select();
+            qrIbanOutput.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            alert("QR-IBAN copied to clipboard!");
+        }
+    </script>
+
+</body>
+</html>
