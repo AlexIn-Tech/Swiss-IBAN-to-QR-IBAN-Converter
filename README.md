@@ -7,7 +7,6 @@ This is a simple **Swiss QR-IBAN Converter** built using **HTML, TailwindCSS, an
 
 ## 🚀 Features
 - ✅ **Step-by-step tutorial** to help users find their QR-IID.
-- ✅ **Automatic checksum calculation** using modulo 97 algorithm.
 - ✅ **Copy button** for easy QR-IBAN usage.
 - ✅ **Fully responsive design** with TailwindCSS.
 
