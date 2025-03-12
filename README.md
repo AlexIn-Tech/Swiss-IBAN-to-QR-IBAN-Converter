@@ -2,6 +2,9 @@
 
 This is a simple **Swiss QR-IBAN Converter** built using **HTML, TailwindCSS, and JavaScript**. It allows users to convert a **standard IBAN** into a **QR-IBAN**, which is required for Swiss QR invoices.
 
+> Here is the link for this converter :
+> https://alexin-tech.github.io/Swiss-IBAN-to-QR-IBAN-Converter/
+
 ## 🚀 Features
 - ✅ **Step-by-step tutorial** to help users find their QR-IID.
 - ✅ **Automatic checksum calculation** using modulo 97 algorithm.
