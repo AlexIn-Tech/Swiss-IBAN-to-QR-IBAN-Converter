@@ -47,7 +47,6 @@ If you don’t know your QR-IID, follow these steps:
 - **HTML** for structure
 - **TailwindCSS** for styling
 - **JavaScript** for logic
-- **Modulo 97 Algorithm** for checksum validation
 
 ---
 
